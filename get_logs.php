@@ -18,6 +18,18 @@ if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
     $hasta = mysqli_real_escape_string($conn, $_GET['fecha_hasta']);
     $where[] = "fecha_viaje BETWEEN '$desde' AND '$hasta'";
 }
+if (!empty($_GET['estado_boleto'])) {
+    $estado_boleto = mysqli_real_escape_string($conn, $_GET['estado_boleto']);
+    if($estado_boleto === 'confirmacionFallida'){
+        $where[] = "estado_boleto LIKE 'Confirmación fallida%'";
+    } else {
+        $where[] = "estado_boleto = '$estado_boleto'";
+    }
+}
+if (!empty($_GET['codigo_autorizacion'])) {
+    $codigo = mysqli_real_escape_string($conn, $_GET['codigo_autorizacion']); 
+    $where[] = "codigo_autorizacion LIKE '%$codigo%'";
+}
 
 $where_sql = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
 

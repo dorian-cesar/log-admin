@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Logs del Tótem</title>
@@ -7,115 +8,147 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
 </head>
+
 <body class="p-4">
     <div class="container">
-        <h2>Logs del Tótem</h2>
+        <h2 class="text-center mb-4">Logs del Tótem</h2>
 
         <!-- Filtros -->
-        <div class="row g-2 mb-4">
-            <div class="col-md-3">
+        <div class="row g-2 mb-4 align-items-end">
+            <div class="col">
+                <label for="filtroRut" class="form-label text-center w-100">RUT</label>
                 <input type="text" id="filtroRut" class="form-control" placeholder="Buscar RUT">
             </div>
-            <div class="col-md-3">
+        
+            <div class="col">
+                <label for="filtroEstado" class="form-label text-center w-100">Estado Transacción</label>
                 <select id="filtroEstado" class="form-control">
-                    <option value="">Todos los estados</option>
+                    <option value="">Todos</option>
                     <option value="pendiente">Pendiente</option>
                     <option value="Pago realizado">Pago realizado</option>
                     <option value="Pago fallido">Pago fallido</option>
-                  
-                    <!-- Agrega más si hay otros estados posibles -->
+                    <option value="Generado Manualmente">Generado Manualmente</option>
+                    <option value="Pago Intercambio">Pago Intercambio</option>
                 </select>
             </div>
-            <div class="col-md-2">
+        
+            <div class="col">
+                <label for="filtroDesde" class="form-label text-center w-100">Desde</label>
                 <input type="date" id="filtroDesde" class="form-control">
             </div>
-            <div class="col-md-2">
+        
+            <div class="col">
+                <label for="filtroHasta" class="form-label text-center w-100">Hasta</label>
                 <input type="date" id="filtroHasta" class="form-control">
             </div>
-            <div class="col-md-2">
+        
+            <div class="col">
+                <label for="filtroEstadoBoleto" class="form-label text-center w-100">Estado Boleto</label>
+                <select id="filtroEstadoBoleto" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="reservado">Reservado</option>
+                    <option value="confirmado">Confirmado</option>
+                    <option value="confirmacionFallida">Confirmación fallida</option>
+                </select>
+            </div>
+        
+            <div class="col">
+                <label for="filtroAutorizacion" class="form-label text-center w-100">Código Autorización</label>
+                <input type="text" id="filtroAutorizacion" class="form-control" placeholder="Buscar Código">
+            </div>
+        
+            <div class="col">
                 <button id="btnFiltrar" class="btn btn-primary w-100">Filtrar</button>
             </div>
         </div>
+        
+
 
         <!-- Tabla -->
-        <table id="logsTable" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Totem</th>
-                    <th>RUT</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
-                    <th>Fecha Viaje</th>
-                    <th>Hora Viaje</th>
-                    <th>Asiento</th>
-                    <th>Código Reserva</th>
-                    <th>Estado Transacción</th>
-                    <th>Numero Boleto</th>
-                    <th>Estado Boleto</th>
-                    <th>Monto</th>
-                    
-                 
-                </tr>
-            </thead>
-        </table>
+        <div class="d-flex justify-content-center">
+            <table id="logsTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Totem</th>
+                        <th>RUT</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Fecha Viaje</th>
+                        <th>Hora Viaje</th>
+                        <th>Asiento</th>
+                        <th>Código Reserva</th>
+                        <th>Estado Transacción</th>
+                        <th>Numero Boleto</th>
+                        <th>Estado Boleto</th>
+                        <th>Monto</th>
+                        <th>Codigo Autorización</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
-    $(document).ready(function() {
-        var table = $('#logsTable').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: {
-        url: 'https://log-totem.dev-wit.com/log-admin/get_logs.php',
-        type: 'GET',
-        data: function(d) {
-            d.rut = $('#filtroRut').val();
-            d.estado = $('#filtroEstado').val();
-            d.fecha_desde = $('#filtroDesde').val();
-            d.fecha_hasta = $('#filtroHasta').val();
-        }
-    },
-    pageLength: 50,
-    order: [[0, 'desc']],
-    dom: 'Bfrtip', // Activa la barra de botones
-    buttons: [
-        {
-            extend: 'excelHtml5',
-            text: 'Exportar a Excel',
-            title: 'logs_totem',
-            exportOptions: {
-                columns: ':visible'
-            }
-        }
-    ],
-    columns: [
-        { data: 'id' },
-        { data: 'numTotem'},
-        { data: 'rut' },
-        { data: 'origen' },
-        { data: 'destino' },
-        { data: 'fecha_viaje' },
-        { data: 'hora_viaje' },
-        { data: 'asiento' },
-        { data: 'codigo_reserva' },
-        { data: 'estado_transaccion' },
-        { data: 'numero_boleto'},
-         { data: 'estado_boleto'},
-        { data: 'total_transaccion'},
-       
-    ]
-});
+        $(document).ready(function () {
+            var table = $('#logsTable').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: false,
+                ajax: {
+                    url: 'https://log-totem.dev-wit.com/log-admin/get_logs.php',
+                    type: 'GET',
+                    data: function (d) {
+                        d.rut = $('#filtroRut').val();
+                        d.estado = $('#filtroEstado').val();
+                        d.fecha_desde = $('#filtroDesde').val();
+                        d.fecha_hasta = $('#filtroHasta').val();
+                        d.estado_boleto = $('#filtroEstadoBoleto').val();
+                        d.codigo_autorizacion = $('#filtroAutorizacion').val();
+                    }
+                },
+                pageLength: 50,
+                order: [[0, 'desc']],
+                dom: 'Bfrtip', // Activa la barra de botones
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Exportar a Excel',
+                        title: 'logs_totem',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ],
+                columns: [
+                    { data: 'id' },
+                    { data: 'numTotem' },
+                    { data: 'rut' },
+                    { data: 'origen' },
+                    { data: 'destino' },
+                    { data: 'fecha_viaje' },
+                    { data: 'hora_viaje' },
+                    { data: 'asiento' },
+                    { data: 'codigo_reserva' },
+                    { data: 'estado_transaccion' },
+                    { data: 'numero_boleto' },
+                    { data: 'estado_boleto' },
+                    { data: 'total_transaccion' },
+                    { data: 'codigo_autorizacion' },
 
-        $('#btnFiltrar').click(function() {
-            table.ajax.reload();
+                ]
+            });
+
+            $('#btnFiltrar').click(function () {
+                table.ajax.reload();
+            });
         });
-    });
     </script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 </body>
+
 </html>
